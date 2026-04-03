@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>English Chatbot</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.chat-container {
+    width: 420px;
+    height: 650px;
+    background: #1e293b;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    padding: 15px;
+    background: #3b82f6;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.message {
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    max-width: 75%;
+}
+
+.user {
+    background: #22c55e;
+    align-self: flex-end;
+    color: white;
+}
+
+.bot {
+    background: #334155;
+    color: white;
+}
+
+.input-box {
+    display: flex;
+    border-top: 1px solid #444;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+button {
+    padding: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+    <div class="header">Learn Together ,G   row Together</div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-box">
+        <input id="input" placeholder="Type your message..." onkeypress="handleKey(event)">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+async function sendMessage() {
+    let input = document.getElementById("input");
+    let message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    let response = await fetch("http://127.0.0.1:8000/chat?msg=" + encodeURIComponent(message), {
+        method: "POST"
+    });
+
+    let data = await response.json();
+
+    addMessage(data.response, "bot");
+}
+
+function addMessage(text, type) {
+    let chatBox = document.getElementById("chatBox");
+    let msg = document.createElement("div");
+
+    msg.className = "message " + type;
+    msg.innerText = text;
+
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function handleKey(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+</script>
+
+</body>
+</html>
